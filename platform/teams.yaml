@@ -12,9 +12,10 @@ teams:
     description: Day 1 integration tests; holds no long-lived resources
 
 users:
+  # Admin only: writing to integ as ed-oatley exercises the platform-admin override (RT-RBAC-02)
   - name: ed-oatley
     display_name: Ed Oatley
-    teams: [cloud-enablement, integ]
+    teams: [cloud-enablement]
   - name: integ-dev
     display_name: Integration Test Developer
     teams: [integ]
