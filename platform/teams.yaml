@@ -1,0 +1,20 @@
+# Teams registry for the live portal (Day 1 plan D7), served by FastAPI's GET /v1/teams.
+# Merged changes reach the portal within 5 minutes, with no redeploy.
+#
+# A team's slug is its Backstage group (group:<slug>) and its directory (teams/<slug>/).
+# Members of cloud-enablement are platform admins (ADR-006). No emails or secrets here.
+teams:
+  - slug: cloud-enablement
+    display_name: Cloud Enablement
+    description: Cloud Enablement Platform Engineering Team
+  - slug: integ
+    display_name: Integration Test
+    description: Day 1 integration tests; holds no long-lived resources
+
+users:
+  - name: ed-oatley
+    display_name: Ed Oatley
+    teams: [cloud-enablement, integ]
+  - name: integ-dev
+    display_name: Integration Test Developer
+    teams: [integ]

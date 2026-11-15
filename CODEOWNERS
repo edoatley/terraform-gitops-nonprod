@@ -1,0 +1,5 @@
+# Cloud Enablement owns the platform files; FastAPI's PRs only touch teams/.
+# Enforcing code-owner review needs a reviewer other than the account FastAPI's token belongs to,
+# so on Day 1 this is informational (see the Day 1 plan, decision D3a).
+* @edoatley
+/teams/

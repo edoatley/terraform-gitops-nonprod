@@ -1,0 +1,81 @@
+# GitOps Terraform pipeline (Day 1 plan, B2). Installed by `make nonprod-gitops-bootstrap`
+# from cloud-resource-lifecycle/terraform-gitops/gitops-repo-template.
+#
+# Pull requests: fmt, validate and plan as the required check `terraform-plan`, so FastAPI's
+# auto-merge arms on compliant PRs and nothing merges without a clean plan.
+# main: apply. Both sign in to GCP keylessly (Workload Identity Federation) as gitops-terraform.
+# Repository variables (set by the bootstrap): GCP_WORKLOAD_IDENTITY_PROVIDER, GCP_SERVICE_ACCOUNT,
+# TF_STATE_BUCKET.
+name: terraform
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+jobs:
+  terraform-plan:
+    name: terraform-plan
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: terraform-plan-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+          terraform_wrapper: false
+      - name: Format
+        run: terraform fmt -check -recursive
+      - name: Init
+        run: terraform init -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
+      - name: Validate
+        run: terraform validate -no-color
+      - name: Plan
+        run: |
+          terraform plan -no-color -lock-timeout=5m | tee plan.txt
+          {
+            echo '### Terraform plan'
+            echo '```'
+            grep -E '^(Plan:|No changes|  # )' plan.txt || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  terraform-apply:
+    name: terraform-apply
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    # One apply at a time, in merge order; never cancel an apply part-way
+    concurrency:
+      group: terraform-apply
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+          terraform_wrapper: false
+      - name: Init
+        run: terraform init -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
+      - name: Apply
+        run: terraform apply -auto-approve -no-color -lock-timeout=10m
