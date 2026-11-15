@@ -1,7 +1,7 @@
 name: jlp-integ-poc-rt-events
 location: europe-west2
-storage_class: STANDARD
-lifecycle_delete_days: 30
+storage_class: NEARLINE
+lifecycle_delete_days: 60
 labels:
   managed_by: terraform
   team: integ
