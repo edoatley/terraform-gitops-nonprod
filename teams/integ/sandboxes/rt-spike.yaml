@@ -1,0 +1,18 @@
+name: jlp-integ-sbx-rt-spike
+location: global
+ttl_days: 14
+budget_limit_gbp: 100
+created_on: '2026-11-15'
+expires_on: '2026-11-29'
+extensions_used: 0
+labels:
+  managed_by: terraform
+  team: integ
+  owner: integ-dev
+  resource_type: project_sandbox
+  ttl_days: '14'
+  budget_limit_gbp: '100'
+  created_on: '2026-11-15'
+  expires_on: '2026-11-29'
+  extensions_used: '0'
+  updated_on: '2026-11-15'
