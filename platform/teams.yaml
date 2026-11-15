@@ -10,6 +10,9 @@ teams:
   - slug: integ
     display_name: Integration Test
     description: Day 1 integration tests; holds no long-lived resources
+  - slug: rt-temp
+    display_name: RT Temp
+    description: Throwaway team for RT-PLAT-04; removed by the revert
 
 users:
   - name: ed-oatley
