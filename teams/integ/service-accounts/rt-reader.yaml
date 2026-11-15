@@ -1,0 +1,14 @@
+name: jlp-integ-rt-reader
+location: global
+display_name: ETL runner
+description: Runs the nightly ETL job
+credential_mode: keyless
+roles:
+- roles/logging.logWriter
+- roles/storage.objectViewer
+labels:
+  managed_by: terraform
+  team: integ
+  owner: ed-oatley
+  resource_type: service_account
+  updated_on: '2026-11-15'
